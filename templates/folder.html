@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a class="back" href="{{ url_for('index') }}">&larr; 返回资料夹列表</a></p>
+<div class="toolbar">
+  <form method="get" style="display:flex; gap:8px;">
+    <input type="text" name="q" placeholder="搜寻姓名 / 班级 / 学号 / 备注…" value="{{ q }}">
+    <button type="submit" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;">搜寻</button>
+  </form>
+  <a class="dl" href="{{ url_for('export_csv', folder_name=folder_name, q=q) if q else url_for('export_csv', folder_name=folder_name) }}">下载 CSV</a>
+  <a class="dl" href="{{ url_for('view_grouped', folder_name=folder_name) }}" target="_blank" rel="noopener">依缺席情况分组名单 ↗</a>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="n">{{ stats.total_clubs }}</div><div class="l">上传档案数</div></div>
+  <div class="stat"><div class="n">{{ stats.total_records }}</div><div class="l">缺席记录总数</div></div>
+  {% for k, v in stats.reason_counts %}
+  <div class="stat"><div class="n">{{ v }}</div><div class="l">{{ k }}</div></div>
+  {% endfor %}
+  {% if stats.error_count %}
+  <div class="stat"><div class="n">{{ stats.error_count }}</div><div class="l">解析失败档案</div></div>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% for s in sections %}
+  <div class="club-header">
+    <span class="club">{{ s.club_label }}</span>
+    <span class="meta">{% if s.session_date %}日期：{{ s.session_date }}&nbsp;|&nbsp;{% endif %}来源档案：{{ s.file }}</span>
+    {% if s.full_attendance_empty %}<span class="full-att">全勤 / 无缺席</span>{% endif %}
+  </div>
+  {% if s.error %}
+    <div class="error">{{ s.error }}</div>
+  {% elif s.records %}
+    <table>
+      <thead><tr><th>序</th><th>姓名</th><th>班级</th><th>学号</th><th>缺席情况</th><th>备注（补充说明请假情况）</th></tr></thead>
+      <tbody>
+      {% for r in s.records %}
+      <tr>
+        <td>{{ r['序'] if r['序'] is not none else '' }}</td>
+        <td>{{ r['姓名'] or '' }}</td>
+        <td>{{ r['班级'] or '' }}</td>
+        <td>{{ r['学号'] or '' }}</td>
+        <td>{{ r['缺席情况'] or '' }}</td>
+        <td>{{ r['备注'] or '' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% elif s.show_empty_message %}
+    <div class="empty">（此档案没有列出缺席记录）</div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a class="back" href="{{ url_for('view_folder', folder_name=folder_name) }}">&larr; 返回 {{ folder_name }}</a></p>
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+    <strong>依缺席情况分组名单</strong>
+    <span style="display:flex; gap:8px; align-items:center;">
+      <button type="button" class="dl" id="copy-btn">复制全部</button>
+      <a class="dl" href="{{ url_for('export_grouped', folder_name=folder_name) }}">下载 .txt</a>
+      <span id="copy-status" style="font-size:0.8rem; color:var(--muted);"></span>
+    </span>
+  </div>
+  <div style="font-size:0.78rem; color:var(--muted); margin-bottom:8px;">
+    每 10 人一行，按学会/团体分组（已略过 内部公假 / 迟到 / 早退）
+  </div>
+  <textarea id="grouped-text" readonly rows="30"
+    style="width:100%; font-family:ui-monospace,Consolas,monospace; font-size:0.85rem;
+           padding:10px; border:1px solid var(--border); border-radius:8px;
+           background:var(--row-alt); color:var(--text); resize:vertical;">{{ grouped_text }}</textarea>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

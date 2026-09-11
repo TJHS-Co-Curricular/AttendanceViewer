@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% if not folders %}
+<div class="card">
+  <p class="error">在 <code>{{ base_dir }}</code> 找不到任何资料夹。</p>
+  <p class="empty">请确认此脚本与 "Result" 文件夹位于同一目录，或以命令行参数指定路径：
+  <code>python app.py "路径\到\Result"</code></p>
+</div>
+{% else %}
+<div class="folder-grid">
+  {% for f in folders %}
+  <a class="folder-card" href="{{ url_for('view_folder', folder_name=f.name) }}">
+    <div class="date">{{ f.name }}</div>
+    <div class="name">{{ f.count }} 份上传档案</div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
